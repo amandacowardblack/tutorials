@@ -1,7 +1,7 @@
 # Building Cluster From Scratch
 Create a bootable USB from the latest Ubuntu Server LTS [I used Ubuntu 18.04.3 LTS] using Rufus on a Windows computer.
 
-Hostname is $(your-hostname) and domain is $(your-domain). This is tied to the MAC address of the external network card. Should you ever need to change the network card, you have to contact ITS with the MAC address of the card you want $(your-hostname).$(your-domain) (or $(your-hostname2).$(your-domain)) to redirect to.
+Hostname is ${your-hostname} and domain is ${your-domain}. This is tied to the MAC address of the external network card. Should you ever need to change the network card, you have to contact ITS with the MAC address of the card you want ${your-hostname}.${your-domain} (or ${your-hostname2}.${your-domain}) to redirect to.
 
 # Operating System Configuration
 ## Head Node
@@ -50,9 +50,9 @@ The external network card should be listed, with dhcp4 marked yes. Add these lin
     etho:
       dhcp4: no
       addresses: [10.42.0.0/8]
-      gateway4: $(default-gateway-ip)
+      gateway4: ${default-gateway-ip}
       nameservers:
-             addresses: [$(ip)]
+             addresses: [${ip}]
 
 Note that the reason /8 is used rather than /24 is that the cluster has 7 compute nodes, and the head node is given a subaddress as well. This just ensures that only those nodes are specified.
 
@@ -122,7 +122,7 @@ Before installation, we checked the RAM capacity of each node.
 
 Manually configure network card (this may prove a hassle to get to).
 
-| 10.42.0.0 | $(your-hostname).$(your-domain) |
+| 10.42.0.0 | ${your-hostname}.${your-domain} |
 | --------- | ------------------------ |
 | 10.42.0.1 | compute-0-0              |
 | 10.42.0.2 | compute-0-1              |
@@ -134,11 +134,11 @@ Manually configure network card (this may prove a hassle to get to).
 
 Netmask: 255.0.0.0
 Gateway: 10.42.0.0
-Server addresses: $(name-server-1) $(name-server-2)
+Server addresses: ${name-server-1} ${name-server-2}
 Hostname: compute-0-#
 Domain: site
 
-temp, $(password)
+temp, ${password}
 
 Manual partition:
 750GB: Swap (see above), remaining is /
@@ -152,7 +152,7 @@ Create root password:
 
 Edit /etc/hosts (on head node and compute nodes)
 
-    10.42.0.0    $(your-hostname).$(your-domain)    $(your-hostname)
+    10.42.0.0    ${your-hostname}.${your-domain}    ${your-hostname}
     10.42.0.1    compute-0-0.site    compute-0-0
     10.42.0.2    compute-0-1.site    compute-0-1
     10.42.0.3    compute-0-2.site    compute-0-2
@@ -257,7 +257,7 @@ Update the NIS database
 
     $ /usr/lib/yp/ypinit -m
 
-Make sure that the host to add is $(your-hostname).$(your-domain)
+Make sure that the host to add is ${your-hostname}.${your-domain}
 
 Restart the server:
 
@@ -270,7 +270,7 @@ Install NIS:
 
     $ apt -y install nis
 
-And have $(your-domain)
+And have ${your-domain}
 
 Configure as a Client:
 
@@ -278,7 +278,7 @@ Configure as a Client:
 
 
     # add the following
-    domain $(your-domain) server $(your-hostname).$(your-domain)
+    domain ${your-domain} server ${your-hostname}.${your-domain}
 
 
     $ vi /etc/nsswitch.conf
@@ -312,13 +312,13 @@ To test if the NIS is set up properly, create a user and password on the head no
 
 When installing on the head node, it says to run this on all slave nodes, and I didn’t do it until after all that other stuff. Not sure when is appropriate to do it.
 
-    /usr/lib/yp/ypinit -s $(your-hostname).$(your-domain)
+    /usr/lib/yp/ypinit -s ${your-hostname}.${your-domain}
 # Resource Management and Scheduler
 ## Son of Grid Engine
 
 **Master**
 The following notes are adapted from Jeff Gout.
-He set it up so that you should create an account for managing SGE called sgeadmin (in this case, I made pw: $(password2)). But, I’m really installing it as root, because that’s how my system is working.
+He set it up so that you should create an account for managing SGE called sgeadmin (in this case, I made pw: ${password2}). But, I’m really installing it as root, because that’s how my system is working.
 
 Create a home for SGE.
 
@@ -354,7 +354,7 @@ Install those dependencies.
 
     $ apt --fix-broken install
 
-Mail will need to be configured. I selected local only, with a system mail name of $(your-hostname).$(your-domain)
+Mail will need to be configured. I selected local only, with a system mail name of ${your-hostname}.${your-domain}
 
 Install Grid Engine
 
@@ -364,7 +364,7 @@ This opens up a program. I’m installing as root.
 
 Using a network service.
 I kept cell name as default.
-$SGE_CLUSTER_NAME: $(your-hostname)
+$SGE_CLUSTER_NAME: ${your-hostname}
 All defaults afterwards. Using classic spooling because less than 20 nodes.
 I have not added any hosts at this time.
 
@@ -475,7 +475,7 @@ Beforehand, install the GCC compiler.
 
 when adding a new user, be sure to do -m so that the home directory is made
 
-    useradd -m $(username)
+    useradd -m ${username}
     cd /var/yp
     make
 
